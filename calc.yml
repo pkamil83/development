@@ -6,4 +6,4 @@
   tasks:
 
     - name: Run Python script
-      command: python3 calc.py
+      command: python3 "{{ playbook_dir }}/calc.py"
