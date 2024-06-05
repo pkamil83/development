@@ -1,0 +1,78 @@
+---
+- name: run ansible playbook
+  gather_facts: no
+  become: no
+  hosts: localhost
+  tasks:
+    - name: Extract Extra Vars From SNOW Style Payload
+      ansible.builtin.set_fact:
+        isid: "{{ input_isid | d('not provided') }}"
+        snow_req_id: "{{ input_sr_number | d('not provided') }}"
+        aws_account_nam: "{{ (items | json_query(query_aws_account_nam)).0 | d(omit) | lower }}"
+        aws_preferred_iam: "{{ (items | json_query(query_aws_preferred_iam)).0 | d(omit) | lower }}"
+        aws_email_dl: "{{ (items | json_query(query_aws_email_dl)).0 | d(omit) | lower }}"
+        key_rotate_role: "{{ (items | json_query(query_key_rotate_role)).0 | d(omit) | lower }}"
+        will_key_be_shared: "{{ (items | json_query(query_will_key_be_shared)).0 | d(omit) | lower }}"
+        usage_purpose: "{{ (items | json_query(query_usage_purpose)).0 | d(omit) | lower }}"
+        request_reason: "{{ (items | json_query(query_request_reason)).0 | d(omit) | lower }}"
+        detailed_req_descr: "{{ (items | json_query(query_detailed_req_descr)).0 | d(omit) | lower }}"
+      vars:
+        query_aws_account_nam: "[?name=='aws_account_nam'].value"
+        query_aws_preferred_iam: "[?name=='aws_preferred_iam'].value"
+        query_aws_email_dl: "[?name=='aws_email_dl'].value"
+        query_key_rotate_role: "[?name=='key_rotate_role'].value"
+        query_will_key_be_shared: "[?name=='will_key_be_shared'].value"
+        query_usage_purpose: "[?name=='usage_purpose'].value"
+        query_request_reason: "[?name=='request_reason'].value"
+        query_detailed_req_descr: "[?name=='detailed_req_descr'].value"
+
+    - name: Display isid
+      debug:
+        var: isid
+
+    - name: Display snow_req_id
+      debug:
+        var: snow_req_id
+
+    - name: Display aws_account_nam
+      debug:
+        var: aws_account_nam
+
+    - name: Display aws_preferred_iam
+      debug:
+        var: aws_preferred_iam
+
+    - name: Display aws_email_dl
+      debug:
+        var: aws_email_dl
+
+    - name: Display key_rotate_role
+      debug:
+        var: key_rotate_role
+
+    - name: Display will_key_be_shared
+      debug:
+        var: will_key_be_shared
+
+    - name: Display usage_purpose
+      debug:
+        var: usage_purpose
+
+    - name: Display request_reason
+      debug:
+        var: request_reason
+
+    - name: Display detailed_req_descr
+      debug:
+        var: detailed_req_descr
+        
+  register: output
+  
+
+    - name: Export record_creation
+      set_stats:
+        data:
+          record_creation: "{{ snow_out }}"
+      snow_out:
+        status: "success"
+        message: "User successfully created"
